@@ -12,6 +12,7 @@
 		B50F49CE1C7290A200B87E70 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B50F49CC1C7290A200B87E70 /* Main.storyboard */; };
 		B50F49D01C7290A200B87E70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B50F49CF1C7290A200B87E70 /* Assets.xcassets */; };
 		B50F49D31C7290A200B87E70 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B50F49D11C7290A200B87E70 /* LaunchScreen.storyboard */; };
+		B50F49DB1C739C1300B87E70 /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50F49DA1C739C1300B87E70 /* ChecklistItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		B50F49CF1C7290A200B87E70 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B50F49D21C7290A200B87E70 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B50F49D41C7290A200B87E70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B50F49DA1C739C1300B87E70 /* ChecklistItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 				B50F49CC1C7290A200B87E70 /* Main.storyboard */,
 				B50F49CF1C7290A200B87E70 /* Assets.xcassets */,
 				B50F49D11C7290A200B87E70 /* LaunchScreen.storyboard */,
+				B50F49DA1C739C1300B87E70 /* ChecklistItem.swift */,
 				B50F49D41C7290A200B87E70 /* Info.plist */,
 			);
 			path = Checklist;
@@ -137,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B50F49CB1C7290A200B87E70 /* ChecklistViewController.swift in Sources */,
+				B50F49DB1C739C1300B87E70 /* ChecklistItem.swift in Sources */,
 				B50F49C91C7290A200B87E70 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
