@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ChecklistItem {
+class ChecklistItem: NSObject {
     internal var text: String
     var isChecked = false
     required init(text: String){
@@ -20,6 +20,9 @@ class ChecklistItem {
     }
     func getText() -> String {
         return text
+    }
+    func setText(newText text: String){
+        self.text = text
     }
     func toggleChecked() {
         isChecked = !isChecked

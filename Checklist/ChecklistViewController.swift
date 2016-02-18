@@ -38,11 +38,9 @@ class ChecklistViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCellWithIdentifier("ChecklistItem", forIndexPath: indexPath)
-        
-        let label = cell.viewWithTag(1000) as! UILabel
-       
         let item = items[indexPath.row]
-        label.text = item.getText()
+
+        configureTextForCell(cell, withChecklistItem: item)
         configureCheckmarkForCell(cell, withChecklistItem: item)
         
         return cell
@@ -71,17 +69,35 @@ class ChecklistViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "AddItem"{
             let navigationController = segue.destinationViewController as! UINavigationController
-            let controller = navigationController.topViewController as! AddItemViewController
-            
+            let controller = navigationController.topViewController as! ItemDetailViewController
             controller.delegate = self
+            
+        } else if segue.identifier == "EditItem" {
+            let navigationController = segue.destinationViewController as! UINavigationController
+            let controller = navigationController.topViewController as! ItemDetailViewController
+            controller.delegate = self
+            
+            // sender в данном случае это объект который вызвал данный переход. В нашем случае это 
+            // одна из ячеек (cell) в которой была нажата кнопка 
+            // зная кто вызвал это событие можно найти строку в таблице для заданной ячейки следующим образом:
+            if let indexPath = tableView.indexPathForCell(sender as! UITableViewCell) {
+                controller.itemToEdit = items[indexPath.row]
+            }
         }
     }
     
+    private func configureTextForCell(cell: UITableViewCell, withChecklistItem item: ChecklistItem) {
+        let label = cell.viewWithTag(1000) as! UILabel
+        label.text = item.getText()
+    }
+    
     private func configureCheckmarkForCell(cell:UITableViewCell, withChecklistItem item: ChecklistItem) {
+        let label = cell.viewWithTag(1001) as! UILabel
+        
         if item.isChecked {
-            cell.accessoryType = .Checkmark
+            label.text = "√"
         }else {
-            cell.accessoryType = .None
+            label.text = ""
         }
         
     }
@@ -97,13 +113,22 @@ class ChecklistViewController: UITableViewController {
     
 }
 
-extension ChecklistViewController: AddItemViewControllerDelegate {
-    func addItemViewControllerDidCancel(controller: AddItemViewController) {
-        controller.dismissViewControllerAnimated(true, completion: nil)
+extension ChecklistViewController: ItemDetailViewControllerDelegate {
+    func addItemDetailViewControllerDidCancel(controller: ItemDetailViewController) {
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
-    func addItemViewController(controller: AddItemViewController, didFinishAddingItem item: ChecklistItem) {
+    func addItemDetailViewController(controller: ItemDetailViewController, didFinishAddingItem item: ChecklistItem) {
         appendItem(item)
-        controller.dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    func addItemDetailViewController(controller: ItemDetailViewController, didFinishEditingItem item: ChecklistItem) {
+        if let index = items.indexOf(item) {
+            let indexPath = NSIndexPath(forRow: index, inSection: 0)
+            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+                configureTextForCell(cell, withChecklistItem: item)
+            }
+        }
+        dismissViewControllerAnimated(true, completion: nil)
     }
 }
