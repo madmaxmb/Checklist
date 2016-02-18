@@ -31,16 +31,6 @@ class ChecklistViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    @IBAction func addItem() {
-        let newRowItem = items.count
-        items.append(ChecklistItem(text: "This is new item"))
-        
-        let indexPath = NSIndexPath(forRow: newRowItem, inSection: 0)
-        let indexPaths = [indexPath]
-        tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
-    }
-    
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
@@ -69,6 +59,24 @@ class ChecklistViewController: UITableViewController {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
     
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        // This method automaticaly enable swipe-to-delete
+    
+        items.removeAtIndex(indexPath.row)
+        
+        let indexPaths = [indexPath]
+        tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "AddItem"{
+            let navigationController = segue.destinationViewController as! UINavigationController
+            let controller = navigationController.topViewController as! AddItemViewController
+            
+            controller.delegate = self
+        }
+    }
+    
     private func configureCheckmarkForCell(cell:UITableViewCell, withChecklistItem item: ChecklistItem) {
         if item.isChecked {
             cell.accessoryType = .Checkmark
@@ -78,14 +86,24 @@ class ChecklistViewController: UITableViewController {
         
     }
     
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        // This method automaticaly enable swipe-to-delete
-    
-        items.removeAtIndex(indexPath.row)
+    private func appendItem(item: ChecklistItem){
+        let newRowItem = items.count
+        items.append(item)
         
+        let indexPath = NSIndexPath(forRow: newRowItem, inSection: 0)
         let indexPaths = [indexPath]
-        tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+        tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
     }
-
+    
 }
 
+extension ChecklistViewController: AddItemViewControllerDelegate {
+    func addItemViewControllerDidCancel(controller: AddItemViewController) {
+        controller.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func addItemViewController(controller: AddItemViewController, didFinishAddingItem item: ChecklistItem) {
+        appendItem(item)
+        controller.dismissViewControllerAnimated(true, completion: nil)
+    }
+}
