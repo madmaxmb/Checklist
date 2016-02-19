@@ -14,11 +14,8 @@ class ChecklistViewController: UITableViewController {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        items.append(ChecklistItem(text: "Walk with dog"))
-        items.append(ChecklistItem(text: "Brush my teeth", withCheckedOption: true))
-        items.append(ChecklistItem(text: "Learn iOS development"))
-        items.append(ChecklistItem(text: "Soccer practice", withCheckedOption: true))
-        items.append(ChecklistItem(text: "Eat ice cream"))
+        
+        loadChecklistItems()
     }
     
     override func viewDidLoad() {
@@ -52,6 +49,7 @@ class ChecklistViewController: UITableViewController {
             let item = items[indexPath.row]
             item.toggleChecked()
             configureCheckmarkForCell(cell, withChecklistItem: item)
+            saveChecklistItems()
         }
         
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
@@ -64,6 +62,7 @@ class ChecklistViewController: UITableViewController {
         
         let indexPaths = [indexPath]
         tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+        saveChecklistItems()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -111,6 +110,37 @@ class ChecklistViewController: UITableViewController {
         tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
     }
     
+    func documentDirectory() -> String {
+        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+
+        return paths[0]
+    }
+    
+    func dataFilePath() -> String {
+        return (documentDirectory() as NSString).stringByAppendingPathComponent("Checklists.plist")
+    }
+    
+    func saveChecklistItems() {
+        let data = NSMutableData()
+        let archiver = NSKeyedArchiver(forWritingWithMutableData: data)
+        archiver.encodeObject(items, forKey: "ChecklistItems")
+        archiver.finishEncoding()
+        data.writeToFile(dataFilePath(), atomically: true)
+    }
+    
+    func loadChecklistItems() {
+        let path = dataFilePath()
+        
+        if NSFileManager.defaultManager().fileExistsAtPath(path) {
+            if let data = NSData(contentsOfFile: path) {
+                let unarchiver = NSKeyedUnarchiver(forReadingWithData: data)
+                
+                items = unarchiver.decodeObjectForKey("ChecklistItems") as! [ChecklistItem]
+                
+                unarchiver.finishDecoding()
+            }
+        }
+    }
 }
 
 extension ChecklistViewController: ItemDetailViewControllerDelegate {
@@ -120,6 +150,7 @@ extension ChecklistViewController: ItemDetailViewControllerDelegate {
     
     func addItemDetailViewController(controller: ItemDetailViewController, didFinishAddingItem item: ChecklistItem) {
         appendItem(item)
+        saveChecklistItems()
         dismissViewControllerAnimated(true, completion: nil)
     }
     func addItemDetailViewController(controller: ItemDetailViewController, didFinishEditingItem item: ChecklistItem) {
@@ -127,6 +158,7 @@ extension ChecklistViewController: ItemDetailViewControllerDelegate {
             let indexPath = NSIndexPath(forRow: index, inSection: 0)
             if let cell = tableView.cellForRowAtIndexPath(indexPath) {
                 configureTextForCell(cell, withChecklistItem: item)
+                saveChecklistItems()
             }
         }
         dismissViewControllerAnimated(true, completion: nil)
