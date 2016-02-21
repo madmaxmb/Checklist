@@ -21,6 +21,20 @@ class AllListViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        // UIKit automatically calls this method after the view controller has become visible.
+        
+        super.viewDidAppear(animated)
+        
+        navigationController?.delegate = self
+        
+        let index = NSUserDefaults.standardUserDefaults().integerForKey("ChecklistIndex")
+        if index != -1 {
+            let checklist = dataModel.lists[index]
+            performSegueWithIdentifier("ShowChecklist", sender: checklist)
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -46,6 +60,7 @@ class AllListViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
        
+        NSUserDefaults.standardUserDefaults().setInteger(indexPath.row, forKey: "ChecklistIndex")
         let checklist = dataModel.lists[indexPath.row]
         performSegueWithIdentifier("ShowChecklist", sender: checklist)
     }
@@ -157,3 +172,14 @@ extension AllListViewController: ListDetailViewControllerDelegate {
         dismissViewControllerAnimated(true, completion: nil)
     }
 }
+
+extension AllListViewController: UINavigationControllerDelegate{
+    func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
+        //This method is called whenever the navigation controller will slide to a new screen.
+        
+        if viewController === self {
+            NSUserDefaults.standardUserDefaults().setInteger(-1, forKey: "ChecklistIndex")
+        }
+    }
+}
+
