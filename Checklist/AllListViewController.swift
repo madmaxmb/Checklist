@@ -23,8 +23,8 @@ class AllListViewController: UITableViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
-        // UIKit automatically calls this method after the view controller has become visible.
-        
+        // UIKit automatically calls this method after (после)  the view controller has become visible and the animation has completed.
+        // после того как view стал видимым и прекаратилась анимация
         super.viewDidAppear(animated)
         
         navigationController?.delegate = self
@@ -34,6 +34,14 @@ class AllListViewController: UITableViewController {
             let checklist = dataModel.lists[index]
             performSegueWithIdentifier("ShowChecklist", sender: checklist)
         }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        // when the view is about to become visible but the animation hasn’t started yet.
+        // данный мето вызывается перед viewDidAppear и когда view знает что станет видимым, 
+        // но отрисовки на экран еще не происходит
+        super.viewWillAppear(animated)
+        tableView.reloadData() // обновляет данные в таблице. 
     }
 
     override func didReceiveMemoryWarning() {
@@ -54,6 +62,8 @@ class AllListViewController: UITableViewController {
         let checklist = dataModel.lists[indexPath.row]
         cell.textLabel?.text = checklist.name
         cell.accessoryType = .DetailDisclosureButton
+        
+        cell.detailTextLabel!.text = getSubtitle(checklist.countUncheckedItems(), forChecklist: checklist)
         
         return cell
     }
@@ -134,14 +144,25 @@ class AllListViewController: UITableViewController {
         }
     }
 
-    
-
     func cellForTableView(tableView: UITableView) -> UITableViewCell{
         let cellIdentifier = "Cell"
         if let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier){
             return cell
         } else {
-            return UITableViewCell(style: .Default, reuseIdentifier: cellIdentifier)
+            return UITableViewCell(style: .Subtitle, reuseIdentifier: cellIdentifier)
+            // .Defaul
+        }
+    }
+    
+    private func getSubtitle(uncheckedItems: Int, forChecklist checklist: Checklist) -> String{
+        if uncheckedItems > 0 {
+            return "(\(uncheckedItems) Remaining)"
+        } else {
+            if checklist.items.count > 0 {
+                return "All Done!"
+            } else {
+                return "(No Items)"
+            }
         }
     }
 }
