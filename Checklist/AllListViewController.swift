@@ -29,8 +29,8 @@ class AllListViewController: UITableViewController {
         
         navigationController?.delegate = self
         
-        let index = NSUserDefaults.standardUserDefaults().integerForKey("ChecklistIndex")
-        if index != -1 {
+        let index = dataModel.indexOfSelectedChecklist
+        if index >= 0 && index < dataModel.lists.count {
             let checklist = dataModel.lists[index]
             performSegueWithIdentifier("ShowChecklist", sender: checklist)
         }
@@ -60,7 +60,7 @@ class AllListViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
        
-        NSUserDefaults.standardUserDefaults().setInteger(indexPath.row, forKey: "ChecklistIndex")
+        dataModel.indexOfSelectedChecklist = indexPath.row
         let checklist = dataModel.lists[indexPath.row]
         performSegueWithIdentifier("ShowChecklist", sender: checklist)
     }
@@ -178,7 +178,7 @@ extension AllListViewController: UINavigationControllerDelegate{
         //This method is called whenever the navigation controller will slide to a new screen.
         
         if viewController === self {
-            NSUserDefaults.standardUserDefaults().setInteger(-1, forKey: "ChecklistIndex")
+            dataModel.indexOfSelectedChecklist = -1
         }
     }
 }

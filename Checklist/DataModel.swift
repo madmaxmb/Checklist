@@ -10,9 +10,20 @@ import UIKit
 
 class DataModel {
     var lists = [Checklist]()
+    var indexOfSelectedChecklist: Int {
+        get {
+            return NSUserDefaults.standardUserDefaults().integerForKey("ChecklistIndex")
+        }
+        set {
+            NSUserDefaults.standardUserDefaults().setInteger(newValue, forKey: "ChecklistIndex")
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+    }
     
     init(){
         loadChecklists()
+        resignDefault()
+        handleFirstTime()
     }
     
     func documentDirectory() -> String {
@@ -44,6 +55,22 @@ class DataModel {
                 
                 unarchiver.finishDecoding()
             }
+        }
+    }
+    
+    func resignDefault() {
+        let dictionary = ["ChecklistIndex":-1, "FirstTime": true]
+        NSUserDefaults.standardUserDefaults().registerDefaults(dictionary)
+    }
+    
+    func handleFirstTime() {
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        let firstTime = userDefaults.boolForKey("FirstTime")
+        if firstTime {
+            lists.append(Checklist(name: "To-Do List"))
+            indexOfSelectedChecklist = 0
+            userDefaults.setBool(false, forKey: "FirstTime")
+            userDefaults.synchronize()
         }
     }
     
