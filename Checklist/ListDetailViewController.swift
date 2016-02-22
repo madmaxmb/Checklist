@@ -84,7 +84,6 @@ class ListDetailViewController: UITableViewController, UITextFieldDelegate {
 extension ListDetailViewController: IconPickerViewControllerDelegate {
     func iconPicker(picker: IconPickerViewController, didPickIcon iconName: String) {
         self.iconName = iconName
-        print("\(iconName)")
         iconImageView.image = UIImage(named: iconName)
         navigationController?.popViewControllerAnimated(true) // используется popViewControllerAnimated(true) потому что переход(segue) имеет тип show а не present Modality (для него использовался dismissViewController)
         // When creating the segue you used the segue style “show” instead of “present modally”, which pushes the new view controller on the navigation stack. To return you need to “pop” it off again. (dismissViewController() is for modal screens only, not for push screens.)
