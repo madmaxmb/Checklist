@@ -34,12 +34,17 @@ class ListDetailViewController: UITableViewController, UITextFieldDelegate {
             doneBarButton.enabled = true
             iconName = checklist.iconName
         }
+        
         iconImageView.image = UIImage(named:  iconName)
+        
+        let tapAnyWhere = UITapGestureRecognizer(target: self, action: Selector("dismissKeyboard"))
+        tapAnyWhere.cancelsTouchesInView = false // позволит обрабатывать дальнейшие события
+        view.addGestureRecognizer(tapAnyWhere)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        textField.becomeFirstResponder()
+
     }
     
     override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
@@ -78,6 +83,10 @@ class ListDetailViewController: UITableViewController, UITextFieldDelegate {
             let controller = segue.destinationViewController as! IconPickerViewController
             controller.delegate = self
         }
+    }
+    
+    func dismissKeyboard() {
+        textField.resignFirstResponder()
     }
 }
 

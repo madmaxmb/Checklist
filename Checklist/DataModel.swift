@@ -60,7 +60,7 @@ class DataModel {
     }
     
     func resignDefault() {
-        let dictionary = ["ChecklistIndex":-1, "FirstTime": true]
+        let dictionary = ["ChecklistIndex":-1, "FirstTime": true, "ChecklistItemID": 0]
         NSUserDefaults.standardUserDefaults().registerDefaults(dictionary)
     }
     
@@ -79,6 +79,14 @@ class DataModel {
         lists.sortInPlace({ checklist1, checklist2 in
             return checklist1.name.localizedStandardCompare(checklist2.name) == .OrderedAscending
         })
+    }
+    
+    class func nextChecklistItemID() -> Int {
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        let itemID = userDefaults.integerForKey("ChecklistItemID")
+        userDefaults.setInteger(itemID + 1, forKey: "ChecklistItemID")
+        userDefaults.synchronize() //  to write these changes to disk immediately
+        return itemID
     }
     
 }
