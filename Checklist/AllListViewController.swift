@@ -60,9 +60,9 @@ class AllListViewController: UITableViewController {
         let cell = cellForTableView(tableView)
         
         let checklist = dataModel.lists[indexPath.row]
-        cell.textLabel?.text = checklist.name
+        cell.textLabel!.text = checklist.name
         cell.accessoryType = .DetailDisclosureButton
-        
+        cell.imageView!.image = UIImage(named: checklist.iconName) // все поптому что стиль ячейки .Subtitle имеет imageView
         cell.detailTextLabel!.text = getSubtitle(checklist.countUncheckedItems(), forChecklist: checklist)
         
         return cell
@@ -172,24 +172,15 @@ extension AllListViewController: ListDetailViewControllerDelegate {
         dismissViewControllerAnimated(true, completion: nil)
     }
     func listDetailViewController(controller: ListDetailViewController, didFinishAddingChecklist checklist: Checklist) {
-        let newRowIndex = dataModel.lists.count
         
         dataModel.lists.append(checklist)
-        
-        let indexPath = NSIndexPath(forRow: newRowIndex, inSection: 0)
-        let indexPaths = [indexPath]
-        
-        tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
-        
+        dataModel.sortChecklists()
+        tableView.reloadData()
         dismissViewControllerAnimated(true, completion: nil)
     }
     func listDetailViewController(controller: ListDetailViewController, didFinishEditingChecklist checklist: Checklist) {
-        if let index = dataModel.lists.indexOf(checklist) {
-            let indexPath = NSIndexPath(forRow: index, inSection: 0)
-            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-                cell.textLabel!.text = checklist.name
-            }
-        }
+        dataModel.sortChecklists()
+        tableView.reloadData()
         dismissViewControllerAnimated(true, completion: nil)
     }
 }
