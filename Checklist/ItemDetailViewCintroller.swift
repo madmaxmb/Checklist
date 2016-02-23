@@ -25,7 +25,7 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     
     var datePickerVisible = false
     
-    var dueDate = NSDate()
+    var dueDate: NSDate?
     
     weak var delegate: ItemDetailViewControllerDelegate?
     
@@ -159,9 +159,13 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
         let formatter = NSDateFormatter()
         formatter.dateStyle = .MediumStyle
         formatter.timeStyle = .ShortStyle
-        dueDateLable.text = formatter.stringFromDate(dueDate)
+        
+        if let date = dueDate {
+            dueDateLable.text = formatter.stringFromDate(date)
+        } else {
+            dueDateLable.text = formatter.stringFromDate(NSDate())
+        }
     }
-    
     func showDataPicker() {
         datePickerVisible = true
         
@@ -177,8 +181,11 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
         tableView.reloadRowsAtIndexPaths([indexPathDateRow], withRowAnimation: .None)
         
         tableView.endUpdates()
-       
-        datePicker.setDate(dueDate, animated: false)
+        if let date = dueDate {
+            datePicker.setDate(date, animated: false)
+        } else {
+            datePicker.setDate(NSDate(), animated: false)
+        }
     }
     func hideDatePicker() {
         if datePickerVisible {

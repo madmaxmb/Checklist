@@ -53,14 +53,35 @@ class ChecklistViewController: UITableViewController {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
     
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        // This method automaticaly enable swipe-to-delete
+//    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+//        // This method automaticaly enable swipe-to-delete
+//    
+//        checklist.items.removeAtIndex(indexPath.row)
+//        
+//        let indexPaths = [indexPath]
+//        tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+//    }
     
-        checklist.items.removeAtIndex(indexPath.row)
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        // этот делегат прадназначен для создания обработчиков(действий) для изменения строки с индексом indexPath
+        // следующим образом создаются действия:
         
-        let indexPaths = [indexPath]
-        tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+        let moreAction = UITableViewRowAction(style: .Default, title: "Edit") {
+            action, indexPath in
+            let cell = tableView.cellForRowAtIndexPath(indexPath)
+            self.performSegueWithIdentifier("EditItem", sender: cell)
+        }
+        moreAction.backgroundColor = UIColor(red: 0.298, green: 0.851, blue: 0.3922, alpha: 1.0)
+        
+        let deleteAction = UITableViewRowAction(style: .Default, title: "Delete", handler: {
+            action, indexPath in
+            self.checklist.items.removeAtIndex(indexPath.row)
+            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        })
+        
+        return [deleteAction, moreAction]
     }
+
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "AddItem"{
@@ -83,19 +104,16 @@ class ChecklistViewController: UITableViewController {
     }
     
     private func configureTextForCell(cell: UITableViewCell, withChecklistItem item: ChecklistItem) {
-        let label = cell.viewWithTag(1000) as! UILabel
-        label.text = item.getText()
+        cell.textLabel!.text = item.getText()
+        cell.detailTextLabel!.text = item.getDateInString()
     }
     
     private func configureCheckmarkForCell(cell:UITableViewCell, withChecklistItem item: ChecklistItem) {
-        let label = cell.viewWithTag(1001) as! UILabel
-        label.textColor = view.tintColor
         if item.isChecked {
-            label.text = "√"
+            cell.accessoryType = .Checkmark
         }else {
-            label.text = ""
+            cell.accessoryType = .None
         }
-        
     }
     
     private func appendItem(item: ChecklistItem){
@@ -116,15 +134,19 @@ extension ChecklistViewController: ItemDetailViewControllerDelegate {
     
     func addItemDetailViewController(controller: ItemDetailViewController, didFinishAddingItem item: ChecklistItem) {
         appendItem(item)
+        checklist.sortChecklistByDate()
+        tableView.reloadData()
         dismissViewControllerAnimated(true, completion: nil)
     }
     func addItemDetailViewController(controller: ItemDetailViewController, didFinishEditingItem item: ChecklistItem) {
-        if let index = checklist.items.indexOf(item) {
-            let indexPath = NSIndexPath(forRow: index, inSection: 0)
-            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-                configureTextForCell(cell, withChecklistItem: item)
-            }
-        }
+        checklist.sortChecklistByDate()
+        tableView.reloadData()
+//        if let index = checklist.items.indexOf(item) {
+//            let indexPath = NSIndexPath(forRow: index, inSection: 0)
+//            if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+//                configureTextForCell(cell, withChecklistItem: item)
+//            }
+//        }
         dismissViewControllerAnimated(true, completion: nil)
     }
 }

@@ -42,4 +42,10 @@ class Checklist: NSObject, NSCoding {
         }
         return uncheckedItems
     }
+    
+    func sortChecklistByDate() {
+        items.sortInPlace({ firstItem, secondItem in
+            return firstItem.compare(whithItem: secondItem)
+        })
+    }
 }
