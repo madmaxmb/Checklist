@@ -62,7 +62,7 @@ class AllListViewController: UITableViewController {
         let checklist = dataModel.lists[indexPath.row]
         cell.textLabel!.text = checklist.name
         cell.accessoryType = .DetailDisclosureButton
-        cell.imageView!.image = UIImage(named: checklist.iconName) // все поптому что стиль ячейки .Subtitle имеет imageView
+        cell.imageView!.image = UIImage(named: checklist.iconName) // все потому что стиль ячейки .Subtitle имеет imageView
         cell.detailTextLabel!.text = getSubtitle(checklist.countUncheckedItems(), forChecklist: checklist)
         
         return cell
